@@ -43,14 +43,4 @@ export class Constants {
   static readonly PRODUCT_JSON_FILE = './data/product.json';
 }
 
-export const WAIT_SECONDS = {
-  TIMEOUT: {
-    DEFAULT: 5000,
-    TOAST: 3000,
-    PAGE_LOAD: 10000,
-  },
-  AFTER_CLICK: 1000,
-  ELEMENT_VISIBLE: 3000,
-  FOR_TIMEOUT: 500,
-};
 
