@@ -8,9 +8,11 @@ import { ActionType } from '../models/action-type';
 
 
 export class ProductPage extends ProductLocators {
+  commonPage: CommonPage;
 
   constructor(page: Page) {
     super(page);
+    this.commonPage = new CommonPage(page);
   }
 
   /**
