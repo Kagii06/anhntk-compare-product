@@ -8,11 +8,9 @@ import { ActionType } from '../models/action-type';
 
 
 export class ProductPage extends ProductLocators {
-  commonPage: CommonPage;
 
   constructor(page: Page) {
     super(page);
-    this.commonPage = new CommonPage(page);
   }
 
   /**
@@ -48,7 +46,6 @@ export class ProductPage extends ProductLocators {
         btnAction = this.btnAddWishlist(productName);
         break;
       case ActionType.COMPARE:
-        // btnAction = targetProduct.getByTitle('Compare this Product');
         btnAction = this.btnCompare(productName);
         break;
       case ActionType.QUICK_VIEW:
