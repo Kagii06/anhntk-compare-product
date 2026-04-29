@@ -101,9 +101,10 @@ export class ProductPage extends ProductLocators {
   }
 
   /**
-   * Click to navigate to compare page
+   * Navigate to compare page
+   * @param productName - Name of the product
    */
-  @step('Click to navigate to compare page')
+  @step('Navigate to compare page')
   async clickNavigateToComparePage(productName: string): Promise<void> {
     const btnNavigate = this.btnNavigateToComparePage(productName);
     await this.commonPage.waitForVisible(btnNavigate);

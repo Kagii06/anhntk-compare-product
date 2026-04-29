@@ -12,11 +12,12 @@ export class CommonPage extends CommonLocators {
     }
 
     /**
-     * Clicks the "Continue" button to navigate back to the product listing page.
+     * Clicks the "Continue" button.
      */
     @step('Click on Continue button')
     async clickContinue(): Promise<void> {
         await this.click(this.btnContinue);
+        await this.waitForPageLoad();
     }
 
     /**
