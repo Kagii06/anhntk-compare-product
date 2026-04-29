@@ -1,4 +1,5 @@
 import { readFileSync, writeFileSync } from 'fs';
+import { existsSync,readFileSync } from 'fs';
 import path from 'path';
 
 /**
@@ -9,7 +10,11 @@ import path from 'path';
  * @returns Parsed JSON data or the env-specific subset.
  */
 export function readJsonFile<T = unknown>(filePath: string, env?: string): T {
-  const resolvedPath = path.resolve(filePath);
+  const resolvedPath = path.isAbsolute(filePath)
+    ? filePath
+    : existsSync(path.resolve(process.cwd(), filePath))
+      ? path.resolve(process.cwd(), filePath)
+      : path.resolve(__dirname, '..', filePath);
   const rawData = readFileSync(resolvedPath, 'utf8');
   const data = JSON.parse(rawData);
 

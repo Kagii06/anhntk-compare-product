@@ -1,5 +1,8 @@
 import { FrameLocator, Locator, Page } from '@playwright/test';
 export class CommonLocators {
+    locatorsInitialization() {
+      this.locatorInitialization();
+    }
     page: Page;
 
     constructor(page: Page) {
@@ -28,6 +31,7 @@ export class CommonLocators {
     btnCancelDelete!: Locator;
     inputSearch!: Locator;
     ddlOption!: Locator;
+    chkAgreeTerms!: Locator;
     ddlOptionItem!: (option: string) => Locator;
     linkText!: (name: string) => Locator;
 
@@ -66,6 +70,9 @@ export class CommonLocators {
         this.ddlOptionItem = (optionName: string): Locator => {
             return this.page.locator(`xpath=//ul/li[text()="${optionName}"]`);
         };
+
+        this.chkAgreeTerms = this.page.locator('label[for="input-agree"]');
+
     }
 
     /**

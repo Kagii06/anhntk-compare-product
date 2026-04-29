@@ -1,0 +1,42 @@
+name: Auto Generate PR Report
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main, master]
+jobs:
+  generate-report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Install envsubst
+        run: sudo apt-get update && sudo apt-get install -y gettext
+
+      - name: Generate PR Report from Template
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          PR_CHANGED_FILES: ${{ github.event.pull_request.changed_files }}
+          PR_BRANCH: ${{ github.event.pull_request.head.ref }}
+          BASE_BRANCH: ${{ github.event.pull_request.base.ref }}
+        run: |
+          envsubst < .github/templates/report-template.md > PR_REPORT.md
+
+      - name: Upload PR Report
+        uses: actions/upload-artifact@v5
+        with:
+          name: pr-report
+          path: PR_REPORT.md
+
+      - name: Comment PR
+        uses: mshick/add-pr-comment@v2
+        with:
+          message: |
+            ## 📄 PR Report Generated Successfully
+            Download file: **PR_REPORT.md** (Artifact)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
