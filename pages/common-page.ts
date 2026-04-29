@@ -17,7 +17,6 @@ export class CommonPage extends CommonLocators {
     @step('Click on Continue button')
     async clickContinue(): Promise<void> {
         await this.click(this.btnContinue);
-        await this.waitForPageLoad();
     }
 
     /**

@@ -14,7 +14,7 @@ test.describe('Compare Products Tests', () => {
     await productPage.addProductsToCompare([products.htcTouch, products.canon]);
 
     await productPage.clickNavigateToComparePage(products.canon.name);
-    await commonPage.verifyPageLoaded();
+    await commonPage.verifyPageLoaded('Product Comparison');
     await compareProductsPage.verifyProductsDetails([products.canon, products.htcTouch]);
   });
 
@@ -59,7 +59,7 @@ test.describe('Compare Products Tests', () => {
     await compareProductsPage.removeProductsFromCompare([products.canon, products.htcTouch]);
 
     // STEP: Click continue and verify user is redirected to home/store page
-    await compareProductsPage.clickContinueButton();
+    await commonPage.clickContinue();
     await commonPage.verifyPageLoaded('Your Store');
 
     // STEP: Access compare URL directly and verify empty message

@@ -13,23 +13,14 @@ export class CompareProductsPage extends CompareProductsLocators {
   }
 
   /**
-   * Clicks the "Remove" button for the specified product.
-   * @param productName The name of the product for which to click the button.
-   */
-  @step('Click Remove Product Button')
-  async clickRemoveProductButton(productName: string): Promise<void> {
-    await this.commonPage.click(this.btnRemove(productName));
-  }
-
-  /**
    * Remove one or multiple products from the compare table
-   * @param productIds List of product IDs to be removed
+   * @param products List of products to be removed
    */
   @step('Remove products from compare table')
   async removeProductsFromCompare(products: Product[]): Promise<void> {
     for (const product of products) {
-      // Click the remove button for the specific product ID
-      await this.clickRemoveProductButton(product.id);
+      // Click the remove button for the specific product name
+      await this.commonPage.click(this.btnRemove(product.id));
 
       // Verify the product is removed before moving to the next one
       await this.commonPage.waitForHidden(this.btnRemove(product.id));
@@ -38,7 +29,7 @@ export class CompareProductsPage extends CompareProductsLocators {
 
   /**
    *  Retrieves the names of all products in the comparison list.
-   * @returns 
+   * @returns Array of product names
    */
   @step('Get Product Names')
   async getProductNames(): Promise<string[]> {
@@ -48,7 +39,7 @@ export class CompareProductsPage extends CompareProductsLocators {
   /**
    * Helper method to retrieve values from a specific row in the compare table.
    * @param rowLabel The label of the row to retrieve values from (e.g., "Product", "Price", "Stock").
-   * @returns An array of strings containing the values from the specified row.
+   * @returns Array of strings containing the values from the specified row.
    */
   private async getRowValuesInternal(rowLabel: string): Promise<string[]> {
     await expect(this.table).toBeVisible();
@@ -60,7 +51,7 @@ export class CompareProductsPage extends CompareProductsLocators {
 
   /**
    * Verify that the specified products are successfully added and displayed in the comparison table.
-   * @param expectedProducts - An array of Product objects instead of a string.
+   * @param expectedProducts Array of Product objects.
    */
   @step('Verify Product Details in Compare Table')
   async verifyProductsDetails(expectedProducts: Product[]): Promise<void> {
@@ -77,9 +68,9 @@ export class CompareProductsPage extends CompareProductsLocators {
   }
 
   /**
-   * Methods to check for duplicate products in the comparison table.
+   * Verify there are no duplicate products in the comparison table
    */
-  @step('Verify that there are no duplicate products in the comparison table.')
+  @step('Verify No Duplicate Products')
   async verifyNoDuplicateProducts(): Promise<void> {
     const productNames = await this.getProductNames();
     const uniqueProductNames = [...new Set(productNames)];
@@ -87,10 +78,10 @@ export class CompareProductsPage extends CompareProductsLocators {
   }
 
   /**
-   * Verify that there are no products listed on the comparison page.
-   * @param expectMessage: The message indicates the comparison table is empty.
+   * Verify that no products are listed on the comparison page.
+   * @param expectMessage The message displayed when the comparison table is empty.
    */
-  @step('Verify that there are no products listed on the comparison page')
+  @step('Verify No Product On Comparion Page')
   async verifyNoProductOnComparionPage(expectMessage: string): Promise<void> {
     await this.commonPage.waitUntilContainsText(this.lblEmptyMessage, expectMessage);
     await this.commonPage.toBeHidden(this.table);

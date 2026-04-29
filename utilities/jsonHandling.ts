@@ -20,6 +20,11 @@ export function readJsonFile<T = unknown>(filePath: string, env?: string): T {
   return data[env.toLowerCase()] as T;
 }
 
+/**
+ * @description Write data to a JSON file.
+ * @param filePath - Relative or absolute path to the JSON file.
+ * @param data - Data to be written to the JSON file.
+ */
 export function writeJsonFile<T = unknown>(filePath: string, data: T): void {
   const resolvedPath = path.resolve(filePath);
   const jsonData = JSON.stringify(data, null, 2);
