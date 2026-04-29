@@ -59,8 +59,7 @@ export class ProductPage extends ProductLocators {
 
     await this.commonPage.hover(targetProduct);
     await this.commonPage.click(btnAction, { force: true });
-    // Wait for background processes to settle (Network Idle)
-    await this.page.waitForLoadState('networkidle');
+    await this.commonPage.waitForPageLoad();
   }
 
   /**

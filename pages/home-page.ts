@@ -13,13 +13,13 @@ export class HomePage extends HomeLocators {
   }
 
   /**
-   * Selects a menu item from the main navigation.
-   * @param menuName The name of the menu item to select.
+   * Navigate to product category page
+   * @param menuName Category name
    */
   @step('Select Menu')
   async selectMenu(menuName: string): Promise<void> {
-    await this.shopByCategoryMenu.click()
-    await this.itemTopCategory(menuName).click()
+    await this.commonPage.click(this.shopByCategoryMenu);
+    await this.commonPage.waitUntilVisible(this.itemTopCategory(menuName));
+    await this.commonPage.click(this.itemTopCategory(menuName));
   }
-
 }
