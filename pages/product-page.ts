@@ -56,7 +56,6 @@ export class ProductPage extends ProductLocators {
     }
     // Wait for the button to be interactable and click it
     await this.commonPage.waitForVisible(btnAction);
-
     await this.commonPage.hover(targetProduct);
     await this.commonPage.click(btnAction, { force: true });
     await this.commonPage.waitForPageLoad();
@@ -70,8 +69,7 @@ export class ProductPage extends ProductLocators {
   async addProductsToCompare(products: Product[]): Promise<void> {
     for (const product of products) {
       await this.performActionOnProduct(product, ActionType.COMPARE);
-      // Verify toast message displays the correct product name.
-      await this.verifyProductInToast(product.name);
+      await this.commonPage.waitForVisible(this.toastMessage(product.name));
     }
   }
 
@@ -99,14 +97,6 @@ export class ProductPage extends ProductLocators {
   @step('Close toast message by name')
   async closeToast(name: string): Promise<void> {
     await this.commonPage.click(this.btnCloseToast(name));
-    await this.waitForToastDisappear();
-  }
-
-  /**
-   * Wait for toast message to disappear
-   */
-  @step('Wait for toast message to disappear')
-  async waitForToastDisappear(): Promise<void> {
     await this.commonPage.waitForHidden(this.toastBody.first());
   }
 
@@ -118,15 +108,6 @@ export class ProductPage extends ProductLocators {
     const btnNavigate = this.btnNavigateToComparePage(productName);
     await this.commonPage.waitForVisible(btnNavigate);
     await this.commonPage.click(btnNavigate);
-    await this.page.waitForLoadState('networkidle');
-  }
-
-  /**
-   * Validates the success message displayed in the toast notification.
-   * @param expectedMessage - The message expected to be in the toast.
-   */
-  @step('Verify Toast Message')
-  async verifyProductInToast(productName: string): Promise<void> {
-    await this.commonPage.waitForVisible(this.toastMessage(productName));
+    await this.commonPage.waitForPageLoad();
   }
 }
