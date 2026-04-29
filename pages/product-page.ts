@@ -1,11 +1,9 @@
-import { expect, Page } from '@playwright/test';
+import { Page } from '@playwright/test';
 import { CommonPage } from './common-page';
 import { step } from '../utilities/logging';
 import { ProductLocators } from '../locators/product-locators';
 import { Product } from '../models/product';
-import { Constants } from '../utilities/constants';
 import { ActionType } from '../models/action-type';
-
 
 export class ProductPage extends ProductLocators {
   commonPage: CommonPage;
@@ -22,7 +20,7 @@ export class ProductPage extends ProductLocators {
   @step('Increasing the product quantity by a specified number of times')
   async increaseQuantity(product: Product): Promise<void> {
     for (let index = 1; index < product.quantity; index++) {
-      await this.btnIncreaseQuantity.click();
+      await this.commonPage.click(this.btnIncreaseQuantity);
     }
   }
 
@@ -56,17 +54,11 @@ export class ProductPage extends ProductLocators {
       default:
         throw new Error(`Unsupported action: "${action}"`);
     }
-    await targetProduct.hover();
-
     // Wait for the button to be interactable and click it
-    await btnAction.waitFor({
-      state: 'visible',
-      timeout: Constants.TIMEOUTS.WAIT_ELEMENT_VISIBLE
-    });
+    await this.commonPage.waitForVisible(btnAction);
 
-    await btnAction.hover();
-    await btnAction.click({ force: true });
-
+    await this.commonPage.hover(targetProduct);
+    await this.commonPage.click(btnAction, { force: true });
     // Wait for background processes to settle (Network Idle)
     await this.page.waitForLoadState('networkidle');
   }
@@ -90,7 +82,7 @@ export class ProductPage extends ProductLocators {
    */
   @step('Verifying that the success alert displays the expected message after adding a product to the cart')
   async verifyAddToCartSuccessMessage(expectedMessage: string): Promise<void> {
-    await expect(this.divSuccessAlert).toContainText(expectedMessage);
+    await this.commonPage.waitUntilContainsText(this.divSuccessAlert, expectedMessage);
   }
 
   /**
@@ -107,12 +99,8 @@ export class ProductPage extends ProductLocators {
    */
   @step('Close toast message by name')
   async closeToast(name: string): Promise<void> {
-    try {
-      await this.btnCloseToast(name).click({ timeout: Constants.TIMEOUTS.WAIT_ELEMENT_VISIBLE });
-      await this.waitForToastDisappear();
-    } catch {
-      console.warn(`Toast "${name}" did not appear or close button is missing.`);
-    }
+    await this.commonPage.click(this.btnCloseToast(name));
+    await this.waitForToastDisappear();
   }
 
   /**
@@ -120,19 +108,17 @@ export class ProductPage extends ProductLocators {
    */
   @step('Wait for toast message to disappear')
   async waitForToastDisappear(): Promise<void> {
-    try {
-      await this.toastBody.first().waitFor({
-        state: 'hidden', timeout: Constants.TIMEOUTS.WAIT_ELEMENT_INVISIBLE
-      });
-    } catch {
-      console.warn('Toast did not disappear within expected time');
-    }
+    await this.commonPage.waitForHidden(this.toastBody.first());
   }
 
+  /**
+   * Click to navigate to compare page
+   */
   @step('Click to navigate to compare page')
   async clickNavigateToComparePage(productName: string): Promise<void> {
-    await this.btnNavigateToComparePage(productName).waitFor({ state: 'visible' });
-    await this.btnNavigateToComparePage(productName).click();
+    const btnNavigate = this.btnNavigateToComparePage(productName);
+    await this.commonPage.waitForVisible(btnNavigate);
+    await this.commonPage.click(btnNavigate);
     await this.page.waitForLoadState('networkidle');
   }
 
@@ -142,8 +128,6 @@ export class ProductPage extends ProductLocators {
    */
   @step('Verify Toast Message')
   async verifyProductInToast(productName: string): Promise<void> {
-    const toast = this.toastMessage(productName);
-    await toast.waitFor({ state: 'visible' });
-    await expect(toast).toBeVisible();
+    await this.commonPage.waitForVisible(this.toastMessage(productName));
   }
 }

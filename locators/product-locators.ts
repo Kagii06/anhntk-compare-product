@@ -41,14 +41,14 @@ export class ProductLocators extends CommonLocators {
     this.inputQuantity = this.page.locator('(//input[@name="quantity"])[1]');
     this.divSuccessAlert = this.page.getByRole('alert');
     this.productThumbnail = this.page.locator('//div[@class="product-thumb"]');
-    this.productThumbnaiByName = (productName: string) => this.page.locator(`//h4/a[contains(text(),"${productName}")]/ancestor::div[contains(@class, "product-thumb")]`);
+    this.productThumbnaiByName = (productName: string): Locator => this.page.locator(`//h4/a[contains(text(),"${productName}")]/ancestor::div[contains(@class, "product-thumb")]`);
     this.lblProductName = this.page.locator('//h4[@class="title"]');
     this.lblProuctPrice = this.page.locator('//div[@class="price"]');
-    this.iconCompare = (productName: string) => this.productThumbnaiByName(productName).getByTitle('Compare this Product');
-    this.btnAddWishlist = (productName: string) => this.productThumbnaiByName(productName).locator('//button[contains(@class,"btn-wishlist")]');
-    this.btnQuickView = (productName: string) => this.productThumbnaiByName(productName).locator('//button[contains(@class,"btn-quickview")]');
-    this.btnAddCart = (productName: string) => this.productThumbnaiByName(productName).locator('//button[contains(@class,"btn-cart")]');
-    this.btnCompare = (productName: string) => this.productThumbnaiByName(productName).getByTitle('Compare this Product');
+    this.iconCompare = (productName: string): Locator => this.productThumbnaiByName(productName).getByTitle('Compare this Product');
+    this.btnAddWishlist = (productName: string): Locator => this.productThumbnaiByName(productName).locator('//button[contains(@class,"btn-wishlist")]');
+    this.btnQuickView = (productName: string): Locator => this.productThumbnaiByName(productName).locator('//button[contains(@class,"btn-quickview")]');
+    this.btnAddCart = (productName: string): Locator => this.productThumbnaiByName(productName).locator('//button[contains(@class,"btn-cart")]');
+    this.btnCompare = (productName: string): Locator => this.productThumbnaiByName(productName).getByTitle('Compare this Product');
     this.btnNavigateToComparePage = (productName: string): Locator => {
       return this.page.locator(`//div[contains(@class,"toast")]//p//a[contains(text(),"${productName}")]/ancestor::div[3]//a[contains(text(),"Product Compare")]`);
     }

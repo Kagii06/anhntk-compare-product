@@ -8,7 +8,14 @@ export class HomeLocators extends CommonLocators {
     this.locatorInitialization();
   }
 
+  shopByCategoryMenu!: Locator;
+  itemTopCategory!: (itemName: string) => Locator;
+
   locatorInitialization(): void {
     super.locatorInitialization();
+    this.shopByCategoryMenu = this.page.locator('//a[text()=" Shop by Category"]');
+    this.itemTopCategory = (itemName: string): Locator => {
+      return this.page.locator(`//span[contains(text(),"${itemName}")]`);
+    };
   }
 }

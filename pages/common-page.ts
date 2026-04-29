@@ -11,9 +11,13 @@ export class CommonPage extends CommonLocators {
         super(page);
     }
 
+    /**
+     * Clicks the "Continue" button to navigate back to the product listing page.
+     */
+    @step('Click on Continue button')
     async clickContinue(): Promise<void> {
-        await this.btnContinue.click();
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.click(this.btnContinue);
+        await this.waitForPageLoad();
     }
 
     /**
@@ -780,18 +784,17 @@ export class CommonPage extends CommonLocators {
     }
 
     /**
-       * Verify page loaded by checking title
-       * @param expectedTitle - Expected title of the page (can be string or regex)
-       */
-    @step('Verify page loaded by checking title')
+         * Verify page loaded by checking title or load state
+         * @param expectedTitle - Expected title of the page (can be string or regex)
+         */
+    @step('Verify page loaded')
     async verifyPageLoaded(expectedTitle?: string | RegExp): Promise<void> {
-
         if (expectedTitle) {
-            // Use toHaveTitle: Playwright will automatically wait (default 5s) until the title matches
+            // Wait for title match
             await expect(this.page).toHaveTitle(expectedTitle);
         } else {
-            // Auto wait until title is not empty string
-            await expect(this.page).not.toHaveTitle('');
+            // Wait for DOM to load
+            await this.page.waitForLoadState('domcontentloaded');
         }
     }
 }

@@ -41,11 +41,6 @@ export class CommonLocators {
     iframe3 = 'iframe[name="RadWindow3"]';
     iframe4 = 'iframe[name="RadWindow4"]';
 
-    shopByCategoryMenu!: Locator;
-
-    //top category item
-    itemTopCategory!: (itemName: string) => Locator;
-
     locatorInitialization(): void {
         this.Iframe1 = this.page.frameLocator(this.iframe1);
         this.Iframe2 = this.page.frameLocator(this.iframe2);
@@ -62,6 +57,7 @@ export class CommonLocators {
         this.btnCancelDelete = this.page.locator('button:has-text("Cancel Delete")');
         this.inputSearch = this.page.locator('input[placeholder="Search"]');
         this.ddlOption = this.page.locator('ul[role="listbox"]');
+        this.inputSearch = this.page.locator('//input[@placeholder="Search"]');
 
         this.linkText = (name: string): Locator => {
             return this.page.locator(`xpath=//a[@id and text()="${name}"]`);
@@ -70,12 +66,6 @@ export class CommonLocators {
         this.ddlOptionItem = (optionName: string): Locator => {
             return this.page.locator(`xpath=//ul/li[text()="${optionName}"]`);
         };
-
-        this.inputSearch = this.page.locator('//input[@placeholder="Search"]');
-        this.shopByCategoryMenu = this.page.locator('//a[text()=" Shop by Category"]');
-        this.itemTopCategory = (itemName: string): Locator => {
-            return this.page.locator(`//span[contains(text(),"${itemName}")]`);
-        }
     }
 
     /**

@@ -1,13 +1,15 @@
 import { expect, Page } from '@playwright/test';
-import { Constants } from '../utilities/constants';
 import { step } from '../utilities/logging';
 import { CompareProductsLocators } from '../locators/compare-products-locators';
 import { Product } from '../models/product';
+import { CommonPage } from './common-page';
 
 export class CompareProductsPage extends CompareProductsLocators {
+  commonPage: CommonPage;
 
   constructor(page: Page) {
     super(page);
+    this.commonPage = new CommonPage(page);
   }
 
   /**
@@ -16,7 +18,7 @@ export class CompareProductsPage extends CompareProductsLocators {
    */
   @step('Click Remove Product Button')
   async clickRemoveProductButton(productName: string): Promise<void> {
-    await this.btnRemove(productName).click();
+    await this.commonPage.click(this.btnRemove(productName));
   }
 
   /**
@@ -30,18 +32,8 @@ export class CompareProductsPage extends CompareProductsLocators {
       await this.clickRemoveProductButton(product.id);
 
       // Verify the product is removed before moving to the next one
-      await expect(this.btnRemove(product.id)).toBeHidden({
-        timeout: Constants.TIMEOUTS.DEFAULT
-      });
+      await this.commonPage.waitForHidden(this.btnRemove(product.id));
     }
-  }
-
-  /**
-   * Clicks the "Continue" button to navigate back to the product listing page.
-   */
-  @step('Click Continue Button')
-  async clickContinueButton(): Promise<void> {
-    await this.btnContinue.click()
   }
 
   /**
@@ -100,7 +92,7 @@ export class CompareProductsPage extends CompareProductsLocators {
    */
   @step('Verify that there are no products listed on the comparison page')
   async verifyNoProductOnComparionPage(expectMessage: string): Promise<void> {
-    await expect(this.lblEmptyMessage).toContainText(expectMessage);
-    expect(this.table).toBeHidden()
+    await this.commonPage.waitUntilContainsText(this.lblEmptyMessage, expectMessage);
+    await this.commonPage.toBeHidden(this.table);
   }
 }

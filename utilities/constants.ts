@@ -35,12 +35,9 @@ export class Constants {
   static readonly SECURE_URL = `${Constants.BASE_URL}/secure`;
   static readonly COMPARE_URL = `${Constants.BASE_URL}/index.php?route=product/compare`;
   static readonly CATEGORY_URL = `${Constants.BASE_URL}/index.php?route=product/category&path=20`;
-  static readonly PRODUCT_PAGE_URL = `${Constants.BASE_URL}/index.php?route=product/product&product_id=62&search=macbook+pro`;
   static readonly LOGIN_USERNAME = process.env.LOGIN_USERNAME || 'tomsmith';
   static readonly SUCCESS_MESSAGE = 'You logged into a secure area!';
   static readonly LOGIN_PASSWORD = process.env.LOGIN_PASSWORD || '';
   static readonly USERS_JSON_FILE = './data/users.json';
   static readonly PRODUCT_JSON_FILE = './data/product.json';
 }
-
-
