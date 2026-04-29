@@ -39,7 +39,6 @@ export class ProductLocators extends CommonLocators {
 
   //Compare selectors
 
-  btnCompare!: Locator;
   boxCompareNotificationTop!: Locator;
   boxCompareNotificationContent!: Locator;
   btnCompareNotificationAction!: Locator;
@@ -48,7 +47,6 @@ export class ProductLocators extends CommonLocators {
   btnAddToCart!: Locator;
   lnkViewCart!: Locator;
   searchInput!: Locator;
-  btnSearch!: Locator;
   inputProductSearch!: Locator;
   firstProductImage!: Locator;
   btnBuyNow!: Locator;
