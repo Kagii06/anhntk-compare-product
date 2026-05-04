@@ -76,10 +76,12 @@ This section evaluates how the four core OOP principles are applied in the proje
 
 **Code example:**
 ```typescript
-// Test only calls a high-level method — no selectors exposed
+// The test calls only one high-level Page Object method.
+// LoginPage hides all internal details such as locators, fill actions, and click actions.
 await loginPage.login(user);
-
-// What the test is NOT doing (anti-pattern)
+// Anti-pattern:
+// The test directly accesses selectors and performs low-level UI actions.
+// This exposes implementation details and makes the test tightly coupled to the UI.
 await page.locator('//input[@name="email"]').fill(user.email);
 await page.locator('//input[@name="password"]').fill(user.password);
 await page.locator('//input[@type="submit"]').click();
@@ -102,19 +104,19 @@ await page.locator('//input[@type="submit"]').click();
 
 **Code example:**
 ```typescript
-// models/user.ts — abstracting a user as a typed object
+// UserProfile abstracts user data into one typed object
 export interface UserProfile {
   firstName: string;
-  lastName:  string;
-  email:     string;
+  lastName: string;
+  email: string;
   telephone: string;
-  password:  string;
+  password: string;
 }
 
-// pages/login-page.ts — method signature hides implementation detail
+// login(user) abstracts the login flow behind one business-level method
 async login(user: UserProfile): Promise<void> { ... }
 
-// test spec — reads like plain English
+// Test calls one clear business action instead of multiple UI steps
 await loginPage.login(user);
 ```
 
@@ -153,24 +155,36 @@ ProductLocators
 The key example is **method overriding** of `locatorInitialization()`:
 
 ```typescript
-// CommonLocators — base implementation
+// CommonLocators — parent class
 locatorInitialization(): void {
-    this.btnSubmit = this.page.locator('//input[@type="submit"]');
-    // ... shared locators
+  this.btnSubmit = this.page.locator('//input[@type="submit"]');
+  // ... shared locators
 }
+```
 
-// ProductLocators — overrides and EXTENDS the base
+Then child classes such as `ProductLocators` and `LoginLocators` define the same method name, `locatorInitialization()`, but each class initializes different page-specific locators. `ProductLocators` extends `CommonLocators`, calls `super.locatorInitialization()` first, and then adds product-specific locators such as `lblProductTitle`, `lblProductPrice`, `btnBuyNow`, `btnAddCart`, and `btnCompare`.
+
+```typescript
+// ProductLocators — child class
 locatorInitialization(): void {
-    super.locatorInitialization();           // run parent first
-    this.lblProductTitle = this.page.locator('h1').first();
-    this.btnCompare = (name) => ...;        // product-specific locators
+  super.locatorInitialization(); // initialize shared locators first
+
+  this.lblProductTitle = this.page.locator('h1').first();
+  this.btnCompare = (productName: string): Locator =>
+    this.productThumbnaiByName(productName).getByTitle('Compare this Product');
 }
+```
 
-// LoginLocators — different override
+`LoginLocators` also extends `CommonLocators` and overrides `locatorInitialization()`, but it initializes login-specific locators such as `inputEmail`, `inputPassword`, `btnSubmit`, and `flashMessage`.
+
+```typescript
+// LoginLocators — another child class
 locatorInitialization(): void {
-    super.locatorInitialization();
-    this.inputEmail    = this.page.locator('//input[@name="email"]');
-    this.inputPassword = this.page.locator('//input[@name="password"]');
+  super.locatorInitialization(); // initialize shared locators first
+
+  this.inputEmail = this.page.locator('//input[@name="email"]');
+  this.inputPassword = this.page.locator('//input[@name="password"]');
+  this.btnSubmit = this.page.locator('//input[@type="submit"]');
 }
 ```
 
@@ -202,6 +216,7 @@ export class LoginPage extends LoginLocators {
         this.commonPage = new CommonPage(page); // inject shared action lib
     }
 
+    // Public method for tests to call — no locators exposed
     async login(user: UserProfile): Promise<void> {
         await this.commonPage.fill(this.inputEmail, user.email);     // reuse
         await this.commonPage.fill(this.inputPassword, user.password);
@@ -379,8 +394,11 @@ export class CommonLocators {
         this.locatorInitialization();
     }
 
-    // Supports switching to a new tab / popup
-    setPage(page: Page): void {
+    /**
+     * Updates the current Page context and refreshes locator definitions.
+     * Essential for handling multi-tab scenarios or popups during a test flow.
+     */
+        setPage(page: Page): void {
         this.page = page;
         this.locatorInitialization();
     }
@@ -394,6 +412,21 @@ export class CommonLocators {
         // ...
     }
 }
+```
+
+**Execution Flow Example (`setPage` polymorphism):**
+```text
+productPage.setPage(newPage)
+  ↓
+setPage() from CommonLocators is called
+  ↓
+this.page = newPage
+  ↓
+this.locatorInitialization()
+  ↓
+Because the actual object is ProductPage/ProductLocators
+  ↓
+ProductLocators.locatorInitialization() is executed
 ```
 
 ### 4.2 `[Feature]Locators` — Locator Class (Encapsulation)
@@ -623,6 +656,7 @@ export class WishListLocators extends CommonLocators {
         this.tblWishList   = this.page.locator('//div[@id="wishlist-grid"]');
         this.btnRemoveItem = this.page.locator('//button[contains(@class,"btn-remove")]');
 
+        // Dynamic locator: Finds the 'Add to Cart' button based on the product row
         this.btnAddToCartByName = (productName: string): Locator =>
             this.page.locator(
                 `//a[text()="${productName}"]/ancestor::tr//button[contains(@class,"btn-cart")]`
@@ -719,19 +753,20 @@ test.describe('Wish List Tests', () => {
         wishlistPage,
         commonPage,
     }) => {
-        // Call Page Class method — DO NOT interact with page directly
+        // Use shared action library to retrieve text from a specific Page Object locator property
         const title = await commonPage.textContent(wishlistPage.lblPageTitle);
 
-        // Assertion goes here — inside the test spec
+        // Perform assertion in the test spec to ensure clear reporting and separation of concerns
         Assertions.assertTextContains(title, 'My Wish List');
     });
 
     test('TC-WL-002: Add product from wish list to cart', async ({
         wishlistPage,
     }) => {
+        // Execute a high-level workflow method from the Page Class
         await wishlistPage.addToCartByName('MacBook');
 
-        // Assertion goes here — inside the test spec
+        // Directly assert the visibility of a Page Object locator property within the test spec
         await expect(wishlistPage.divSuccessAlert).toBeVisible();
     });
 
