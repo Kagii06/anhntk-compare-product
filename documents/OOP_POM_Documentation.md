@@ -76,10 +76,10 @@ This section evaluates how the four core OOP principles are applied in the proje
 
 **Code example:**
 ```typescript
-// ✅ Test only calls a high-level method — no selectors exposed
+// Test only calls a high-level method — no selectors exposed
 await loginPage.login(user);
 
-// ❌ What the test is NOT doing (anti-pattern)
+// What the test is NOT doing (anti-pattern)
 await page.locator('//input[@name="email"]').fill(user.email);
 await page.locator('//input[@name="password"]').fill(user.password);
 await page.locator('//input[@type="submit"]').click();
@@ -703,7 +703,7 @@ Create `tests/ui/test-wish-list.spec.ts`:
 ```typescript
 // tests/ui/test-wish-list.spec.ts
 
-// ⚠️ Import 'test' from base-page — DO NOT import from '@playwright/test'
+// Import 'test' from base-page — DO NOT import from '@playwright/test'
 import { test } from '../../pages/base-page';
 import { expect } from '@playwright/test';
 import { Constants } from '../../utilities/constants';
@@ -766,4 +766,3 @@ test.describe('Wish List Tests', () => {
 | `@step()` decorator | `utilities/logging.ts` |
 
 ---
-*Document generated from the actual project source code as of 04/05/2026.*
